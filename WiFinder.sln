@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiFinder", "WiFinder.csproj", "{ADE7B630-1668-4EC1-94FA-D89F72253FE5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADE7B630-1668-4EC1-94FA-D89F72253FE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADE7B630-1668-4EC1-94FA-D89F72253FE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADE7B630-1668-4EC1-94FA-D89F72253FE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADE7B630-1668-4EC1-94FA-D89F72253FE5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {105BE367-3412-4022-BFEC-59D18F0D714B}
+	EndGlobalSection
+EndGlobal
