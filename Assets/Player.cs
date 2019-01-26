@@ -11,11 +11,14 @@ public class Player : MonoBehaviour
     public Transform GroundCheck2 = null;
 
     private bool jump = false;
+
+
+    private Rigidbody2D rigidbody;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -27,22 +30,37 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Jump") && grounded)
         {
             jump = true;
-        } 
+        }
+
+        if (Input.GetButtonDown("Use"))
+        {
+            var filter = new ContactFilter2D();
+            filter.layerMask = 1 << LayerMask.NameToLayer("Router");
+            filter.useLayerMask = true;
+            filter.useTriggers = true;
+
+            var overlappingColliders = new Collider2D[1];
+            if (rigidbody.OverlapCollider(filter, overlappingColliders) > 0)
+            {
+                var routerObject = overlappingColliders[0].gameObject;
+                var controller = routerObject.GetComponent<WifiController>();
+                controller.ToggleRouterActive();
+            }
+        }
     }
 
     private void FixedUpdate()
     {
-        var rigidBody = GetComponent<Rigidbody2D>();
-        rigidBody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, rigidBody.velocity.y);
+        rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, rigidbody.velocity.y);
         if (jump)
         {
-            rigidBody.AddForce(Vector2.up * JumpForce);
+            rigidbody.AddForce(Vector2.up * JumpForce);
             jump = false;
         }
 
-        if (rigidBody.velocity.x > 0.1f)
+        if (rigidbody.velocity.x > 0.1f)
             GetComponent<SpriteRenderer>().flipX = false;
-        else if (rigidBody.velocity.x < -0.1f)
+        else if (rigidbody.velocity.x < -0.1f)
             GetComponent<SpriteRenderer>().flipX = true;
     }
 }
