@@ -1,22 +1,26 @@
 ﻿Shader "Unlit/WiFiShader"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "white" {}
-    }
-    SubShader
-    {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
+	Properties
+	{
+		_MainTex("Texture", 2D) = "white" {}
+	}
+		SubShader
+	{
+		Tags { "RenderType" = "Opaque" }
+		LOD 100
 		Cull Off
+		ZWrite On
 
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
 
-            #include "UnityCG.cginc"
+			#include "UnityCG.cginc"
+
+			int _NumShadowLines = 0;
+			float4 _ShadowLines[16];
 
 			static fixed4 CIRCLE_COLORS[8] = 
 			{
@@ -42,6 +46,12 @@
                 float4 vertex : SV_POSITION;
             };
 
+			struct frag2out
+			{
+				float4 color : SV_TARGET;
+				float depth : SV_DEPTH;
+			};
+
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
@@ -55,29 +65,63 @@
                 return output;
             }
 
-            fixed4 frag (vert2frag input) : SV_Target
+            frag2out frag (vert2frag input)
             {
-                // sample the texture
+                // Compute pixel size.
 				float pixelSize = abs(ddx(input.uv.x));
-				float radius = length(input.uv - float2(0.5f, 0.5f)) * 2;
 
-				float4 color = float4(0, 0, 0, 0);
 
-				for (int c = 0; c < 8; ++c)
+				// Get polar coordinates for shadow check.
+				float3 dir = float3(input.uv - float2(0.5f, 0.5f), 0);
+				float angle = atan2(dir.y, dir.x);
+				float radius = length(dir) * 2;
+
+				bool grey = false;
+
+				for (int s = 0; s < _NumShadowLines; s++)
+				{
+					float4 coords = _ShadowLines[s];
+					float3 a = float3(coords.x, coords.y, 0);
+					float3 b = float3(coords.z, coords.w, 0);
+
+					float3 axc = cross(a, dir);
+					float3 bxc = cross(b, dir);
+
+					// Not within the piece.
+					if (axc.z > 0 || bxc.z < 0)
+						continue;
+
+					// Behind line?
+					if (cross(b - a, dir - a).z < 0)
+						continue;
+
+					// Grey.
+					discard;
+				}
+
+
+				// Accumulate color.
+				frag2out output;
+				output.color = float4(0,0,0, 0);
+				output.depth = -5;
+
+				int c = grey ? 7 : 0;
+				for (; c < 8; ++c)
 				{
 					float circleRadius = 0.9f / 8 * (c + 1);
 					float phase = c * -0.2f;
 					float circ = drawCircle(pixelSize, radius, circleRadius, phase);
 					if (circ > 0)
 					{
-						if (color.a == 0)
-							color += circ * CIRCLE_COLORS[c];
+						output.depth = 1.0f-radius;
+						if (output.color.a == 0)
+							output.color += circ * CIRCLE_COLORS[c];
 						else
-							color += CIRCLE_COLORS[c] * (1.0f - color.a);
+							output.color += CIRCLE_COLORS[c] * (1.0f - output.color.a);
 					}
 				}
-				if (color.a == 0) discard;
-				return color;
+				if (output.color.a == 0) discard;
+				return output;
             }
 
 			float drawCircle(float pixelSize, float dist, float radius, float phase)
@@ -87,8 +131,6 @@
 				radiusTimed *= radius;
 
 				return smoothstep(radiusTimed + pixelSize, radiusTimed - pixelSize, dist);
-				//if (dist < radiusTimed) return 1;
-				//return 0;
 			}
 
             ENDCG

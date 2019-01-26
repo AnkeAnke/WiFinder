@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class WifiRenderer : MonoBehaviour
@@ -19,7 +20,7 @@ public class WifiRenderer : MonoBehaviour
         Vector3 beep = Vector3.zero;
         Vector3 boop = Vector3.zero;
 
-        foreach (GameObject caster in casters)
+        foreach (GameObject caster in casters.Take(16))
         {
             BoxCollider2D box = caster.GetComponent<BoxCollider2D>();
             if (box == null) continue;
@@ -45,7 +46,7 @@ public class WifiRenderer : MonoBehaviour
                 Vector2 dir = corner - (Vector2)center;
                 float angle = Mathf.Atan2(dir.y, dir.x);
                 float relativeAngle = Mathf.DeltaAngle(angle, baseAngle);
-                angleDists.Add(new Vector3(relativeAngle, angle, dir.magnitude / radius));
+                angleDists.Add(new Vector3(relativeAngle, dir.x / radius, dir.y / radius));
             }
 
             angleDists.Sort((p, q) => { return p.x.CompareTo(q.x); });
@@ -53,13 +54,9 @@ public class WifiRenderer : MonoBehaviour
             lines.Add(new Vector4(angleDists[0].y, angleDists[0].z, angleDists[3].y, angleDists[3].z));
         }
 
-
-        // Debug rendering.
-        foreach (Vector4 line in lines)
-        {
-            Vector3 a = center + new Vector3(Mathf.Cos(line.x) * line.y, Mathf.Sin(line.x) * line.y, -0.1f);
-            Vector3 b = center + new Vector3(Mathf.Cos(line.z) * line.w, Mathf.Sin(line.z) * line.w, -0.1f);
-            Debug.DrawLine(a, b);
-        }
+        // Set in shader.
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        renderer.material.SetVectorArray("_ShadowLines", lines.ToArray());
+        renderer.material.SetInt("_NumShadowLines", lines.Count);
     }
 }
