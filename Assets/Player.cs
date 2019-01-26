@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public Transform GroundCheck2 = null;
 
     private bool jump = false;
+    private Vector3 spawnPosition;
 
 
     private Rigidbody2D rigidbody;
@@ -19,6 +20,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        spawnPosition = transform.position;
     }
 
     void Update()
