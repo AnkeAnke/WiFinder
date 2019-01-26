@@ -161,9 +161,9 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 2
   m_Material: {fileID: 6200000, guid: 98c748118cbc6438c9b5f829c8cdcba3, type: 2}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_Interpolate: 2
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &6195641733844732083
 BoxCollider2D:
@@ -204,6 +204,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementSpeed: 5
-  JumpForce: 550
+  JumpForce: 600
   GroundCheck1: {fileID: 2963624530095370262}
   GroundCheck2: {fileID: 1852449770}

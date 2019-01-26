@@ -10,27 +10,38 @@ public class Player : MonoBehaviour
     public Transform GroundCheck1 = null;
     public Transform GroundCheck2 = null;
 
-    private bool jump = false;
+    private bool _jump = false;
+    private Vector3 _spawnPosition;
+    private Transform _platformAttachedTo;
 
-
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D _rigidbody;
     
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _spawnPosition = transform.position;
     }
 
     void Update()
     {
         var groundLayerMask = 1 << LayerMask.NameToLayer("Ground");
-        var grounded = Physics2D.Linecast(transform.position, GroundCheck1.position, groundLayerMask) ||
-                       Physics2D.Linecast(transform.position, GroundCheck2.position, groundLayerMask);
+        var cast1 = Physics2D.Linecast(transform.position, GroundCheck1.position, groundLayerMask);
+        var cast2 = Physics2D.Linecast(transform.position, GroundCheck2.position, groundLayerMask);
 
-        if (Input.GetButtonDown("Jump") && grounded)
+        if (cast1 || cast2)
         {
-            jump = true;
+            if (Input.GetButtonDown("Jump"))
+            {
+                _jump = true;
+            }
+            else
+            {
+                _platformAttachedTo = (cast1 ? cast1 : cast2).transform;
+            }
         }
+        else
+            transform.parent = null;
 
         if (Input.GetButtonDown("Use"))
         {
@@ -40,7 +51,7 @@ public class Player : MonoBehaviour
             filter.useTriggers = true;
 
             var overlappingColliders = new Collider2D[1];
-            if (rigidbody.OverlapCollider(filter, overlappingColliders) > 0)
+            if (_rigidbody.OverlapCollider(filter, overlappingColliders) > 0)
             {
                 var routerObject = overlappingColliders[0].gameObject;
                 var controller = routerObject.GetComponent<WifiController>();
@@ -51,16 +62,24 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, rigidbody.velocity.y);
-        if (jump)
+        var activeMover = _platformAttachedTo?.GetComponent<Mover>();
+        if (activeMover != null)
+            _rigidbody.position += activeMover.Velocity * Time.fixedDeltaTime;
+        _rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, _rigidbody.velocity.y);
+        
+        if (_jump)
         {
-            rigidbody.AddForce(Vector2.up * JumpForce);
-            jump = false;
+            var force = Vector2.up * JumpForce;
+//            if (activeMover != null)
+//                force += activeMover.Velocity * JumpForce; // uhm?
+            _platformAttachedTo = null;
+            _rigidbody.AddForce(force);
+            _jump = false;
         }
 
-        if (rigidbody.velocity.x > 0.1f)
+        if (_rigidbody.velocity.x > 0.1f)
             GetComponent<SpriteRenderer>().flipX = false;
-        else if (rigidbody.velocity.x < -0.1f)
+        else if (_rigidbody.velocity.x < -0.1f)
             GetComponent<SpriteRenderer>().flipX = true;
     }
 }
