@@ -27,8 +27,8 @@ public class WifiRenderer : MonoBehaviour
 
             // Ignore platforms that are too far away.
             Vector2 normal = box.bounds.ClosestPoint(center) - center;
-            Vector2 baseLine = new Vector2(-normal.y, normal.x);
-            float baseAngle = Mathf.Atan2(baseLine.y, baseLine.x);
+            Vector2 baseLine = new Vector2(normal.y, -normal.x);
+            //float baseAngle = Mathf.Atan2(baseLine.y, baseLine.x);
             float distance = normal.magnitude;
             if (distance >= radius) continue;
 
@@ -44,19 +44,30 @@ public class WifiRenderer : MonoBehaviour
             foreach (Vector2 corner in corners)
             {
                 Vector2 dir = corner - (Vector2)center;
-                float angle = Mathf.Atan2(dir.y, dir.x);
-                float relativeAngle = Mathf.DeltaAngle(angle, baseAngle);
-                angleDists.Add(new Vector3(relativeAngle, dir.x / radius, dir.y / radius));
+                float angle = Vector2.Dot(baseLine.normalized, dir.normalized);
+                angleDists.Add(new Vector3(angle, dir.x / radius, dir.y / radius));
             }
 
             angleDists.Sort((p, q) => { return p.x.CompareTo(q.x); });
 
             lines.Add(new Vector4(angleDists[0].y, angleDists[0].z, angleDists[3].y, angleDists[3].z));
+            Debug.DrawLine(center, center + (Vector3)baseLine.normalized * 10, Color.red);
         }
 
         // Set in shader.
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-        renderer.material.SetVectorArray("_ShadowLines", lines.ToArray());
+
         renderer.material.SetInt("_NumShadowLines", lines.Count);
+        for (int l = lines.Count; l < 16; ++l)
+            lines.Add(Vector4.zero);
+        Debug.Assert(lines.Count == 16);
+        renderer.material.SetVectorArray("_ShadowLines", lines.ToArray());
+
+        foreach (var line in lines)
+        {
+            Vector3 a = new Vector3(line.x * radius + center.x, line.y * radius + center.y, 0);
+            Vector3 b = new Vector3(line.z * radius + center.x, line.w * radius + center.y, 0);
+            Debug.DrawLine(a, b);
+        }
     }
 }

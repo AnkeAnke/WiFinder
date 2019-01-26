@@ -95,8 +95,9 @@
 					if (cross(b - a, dir - a).z < 0)
 						continue;
 
-					// Grey.
-					discard;
+					//// Grey.
+					//discard;
+					grey = true;
 				}
 
 
@@ -113,7 +114,7 @@
 					float circ = drawCircle(pixelSize, radius, circleRadius, phase);
 					if (circ > 0)
 					{
-						output.depth = 1.0f-radius;
+						output.depth = (1.0f-radius) * 0.5f;
 						if (output.color.a == 0)
 							output.color += circ * CIRCLE_COLORS[c];
 						else
@@ -121,6 +122,12 @@
 					}
 				}
 				if (output.color.a == 0) discard;
+
+				if (grey)
+				{
+					output.color = float4(0.1f, 0.1f, 0.1f, 1.0f);
+					output.depth = 0;
+				}
 				return output;
             }
 
