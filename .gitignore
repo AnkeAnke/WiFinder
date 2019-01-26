@@ -3,3 +3,5 @@ Logs
 Temp
 .vs
 *.sln
+.idea
+Assembly-CSharp.csproj
