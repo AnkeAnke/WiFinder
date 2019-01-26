@@ -7,6 +7,8 @@ public class Mover : MonoBehaviour
 {
     public Transform Target;
     public float Speed = 5.0f;
+
+    public Vector2 Velocity => toTarget.normalized * Speed * (backwards ? -1 : 1);
     
     private Vector3 startPos;
     private Vector3 toTarget;
@@ -22,7 +24,7 @@ public class Mover : MonoBehaviour
     }
     
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         float dt = Time.time - lastDirSwapTime;
         animationTime = toTarget.magnitude / Speed;
