@@ -5,3 +5,4 @@ Temp
 *.sln
 .idea
 Assembly-CSharp.csproj
+obj
