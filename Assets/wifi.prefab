@@ -151,8 +151,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ba9e79a647b844b1b42e28491a8795c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Type: 1
   ActiveOnStartup: 1
   WifiRenderer: {fileID: 4576360622355706291}
+  WifiIcon: {fileID: 4576360621646781853}
 --- !u!1 &4576360622355706291
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,3 +247,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e16beb3d1e6b2a94e90ee2a08ae616df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Colors: 0
