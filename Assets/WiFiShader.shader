@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		//_ColorSchema("Color Scheme", Int) = 0 
 	}
 		SubShader
 	{
@@ -21,6 +22,11 @@
 
 			int _NumShadowLines = 0;
 			float4 _ShadowLines[16];
+			int _ColorSchema;
+
+			static const int COL_GGJ = 0;
+			static const int COL_RED = 1;
+			static const int COL_GOLD = 2;
 
 			static fixed4 CIRCLE_COLORS[8] = 
 			{
@@ -56,6 +62,7 @@
             float4 _MainTex_ST;
 
 			float drawCircle(float pixelSize, float dist, float radius, float phase);
+			float4 getColor(int ring);
 
 			vert2frag vert (appdata v)
             {
@@ -95,8 +102,7 @@
 					if (cross(b - a, dir - a).z < 0)
 						continue;
 
-					//// Grey.
-					//discard;
+					// Grey.
 					grey = true;
 				}
 
@@ -114,11 +120,11 @@
 					float circ = drawCircle(pixelSize, radius, circleRadius, phase);
 					if (circ > 0)
 					{
-						output.depth = (1.0f-radius) * 0.5f;
+						output.depth = lerp(0.1f, 0, radius);
 						if (output.color.a == 0)
-							output.color += circ * CIRCLE_COLORS[c];
+							output.color += circ * getColor(c);
 						else
-							output.color += CIRCLE_COLORS[c] * (1.0f - output.color.a);
+							output.color += getColor(c) * (1.0f - output.color.a);
 					}
 				}
 				if (output.color.a == 0) discard;
@@ -130,6 +136,21 @@
 				}
 				return output;
             }
+
+			float4 getColor(int ring)
+			{
+				float grey = ((float)ring + 1.0f) / 8;
+				switch (_ColorSchema)
+				{
+					case COL_GGJ:
+						return CIRCLE_COLORS[ring];
+					case COL_RED:
+						return float4(grey, 0, 0, 1.0f);
+					default:
+						grey = lerp(0.2f, 0.02f, grey);
+						return float4(grey, grey, grey, 1.0f);
+				}
+			}
 
 			float drawCircle(float pixelSize, float dist, float radius, float phase)
 			{

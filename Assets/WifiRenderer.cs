@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class WifiRenderer : MonoBehaviour
 {
+    public enum ColorSchema
+    {
+        GGJ = 0,
+        Red = 1,
+        Golden = 2
+    }
+    private ColorSchema _color;
+    public ColorSchema Colors;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -13,12 +22,14 @@ public class WifiRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Set color schema to shader.
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        renderer.material.SetInt("_ColorSchema", (int)Colors);
+
         Vector3 center = gameObject.transform.position;
         float radius = gameObject.transform.lossyScale.x;
         GameObject[] casters = GameObject.FindGameObjectsWithTag("ShadowCaster");
         List<Vector4> lines = new List<Vector4>();
-        Vector3 beep = Vector3.zero;
-        Vector3 boop = Vector3.zero;
 
         foreach (GameObject caster in casters.Take(16))
         {
@@ -51,23 +62,14 @@ public class WifiRenderer : MonoBehaviour
             angleDists.Sort((p, q) => { return p.x.CompareTo(q.x); });
 
             lines.Add(new Vector4(angleDists[0].y, angleDists[0].z, angleDists[3].y, angleDists[3].z));
-            Debug.DrawLine(center, center + (Vector3)baseLine.normalized * 10, Color.red);
         }
 
         // Set in shader.
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
 
         renderer.material.SetInt("_NumShadowLines", lines.Count);
         for (int l = lines.Count; l < 16; ++l)
             lines.Add(Vector4.zero);
         Debug.Assert(lines.Count == 16);
         renderer.material.SetVectorArray("_ShadowLines", lines.ToArray());
-
-        foreach (var line in lines)
-        {
-            Vector3 a = new Vector3(line.x * radius + center.x, line.y * radius + center.y, 0);
-            Vector3 b = new Vector3(line.z * radius + center.x, line.w * radius + center.y, 0);
-            Debug.DrawLine(a, b);
-        }
     }
 }
