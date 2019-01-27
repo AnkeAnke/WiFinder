@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public Transform GroundCheck2 = null;
 
     private bool _jump = false;
+    private bool _isGrounded = false;
     private Vector3 _spawnPosition;
     private Transform _platformAttachedTo;
 
@@ -31,6 +32,7 @@ public class Player : MonoBehaviour
 
         if (cast1 || cast2)
         {
+            _isGrounded = true;
             if (Input.GetButtonDown("Jump"))
             {
                 _jump = true;
@@ -41,7 +43,7 @@ public class Player : MonoBehaviour
             }
         }
         else
-            transform.parent = null;
+            _isGrounded = false;
 
         if (Input.GetButtonDown("Use"))
         {
@@ -66,9 +68,14 @@ public class Player : MonoBehaviour
         if (activeMover != null)
             _rigidbody.position += activeMover.Velocity * Time.fixedDeltaTime;
         _rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, _rigidbody.velocity.y);
-        
+
+
+
+        var animator = GetComponent<Animator>();
+        animator.SetBool("walk", Input.GetAxis("Horizontal") != 0.0f);
         if (_jump)
         {
+            animator.SetTrigger("jump");
             var force = Vector2.up * JumpForce;
 //            if (activeMover != null)
 //                force += activeMover.Velocity * JumpForce; // uhm?
@@ -78,8 +85,8 @@ public class Player : MonoBehaviour
         }
 
         if (_rigidbody.velocity.x > 0.1f)
-            GetComponent<SpriteRenderer>().flipX = false;
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         else if (_rigidbody.velocity.x < -0.1f)
-            GetComponent<SpriteRenderer>().flipX = true;
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 }
