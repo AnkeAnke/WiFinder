@@ -15,7 +15,8 @@ public class MobileWifi : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Respawn();
+        Wifi.SetActive(false);
+        _balance = StartPrepaidBalance;
     }
 
     // Update is called once per frame
