@@ -146,6 +146,8 @@
 						return CIRCLE_COLORS[ring];
 					case COL_GREEN:
 						return float4(0, grey, 0, 1.0f);
+					case COL_GOLD:
+						return float4(grey, grey, 0, 1.0f);
 					default:
 						grey = lerp(0.2f, 0.02f, grey);
 						return float4(grey, grey, grey, 1.0f);
@@ -155,7 +157,7 @@
 			float drawCircle(float pixelSize, float dist, float radius, float phase)
 			{
 				float time = (_Time.w + phase) * 0.6f;
-				float radiusTimed = 1.0f + 0.1f * cos(cos(time) + 1 + time);
+				float radiusTimed = 1.0f + 0.02f * cos(cos(time) + 1 + time);
 				radiusTimed *= radius;
 
 				return smoothstep(radiusTimed + pixelSize, radiusTimed - pixelSize, dist);
