@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     public float JumpForce = 10.0f;
     public Transform GroundCheck1 = null;
     public Transform GroundCheck2 = null;
+    public Transform Sprites = null;
 
     private bool _jump = false;
     private bool _isGrounded = false;
@@ -74,7 +75,7 @@ public class Player : MonoBehaviour
             _rigidbody.position += activeMover.Velocity * Time.fixedDeltaTime;
         _rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, _rigidbody.velocity.y);
 
-        var animator = GetComponent<Animator>();
+        var animator = GetComponentInChildren<Animator>();
         animator.SetBool("walk", Input.GetAxis("Horizontal") != 0.0f);
         if (_jump)
         {
@@ -88,8 +89,8 @@ public class Player : MonoBehaviour
         }
 
         if (_rigidbody.velocity.x > 0.1f)
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            Sprites.localScale = new Vector3(Mathf.Abs(Sprites.localScale.x), Sprites.localScale.y, Sprites.localScale.z);
         else if (_rigidbody.velocity.x < -0.1f)
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            Sprites.localScale = new Vector3(-Mathf.Abs(Sprites.localScale.x), Sprites.localScale.y, Sprites.localScale.z);
     }
 }
