@@ -25,7 +25,7 @@
 			int _ColorSchema;
 
 			static const int COL_GGJ = 0;
-			static const int COL_RED = 1;
+			static const int COL_GREEN = 1;
 			static const int COL_GOLD = 2;
 
 			static fixed4 CIRCLE_COLORS[8] = 
@@ -144,8 +144,8 @@
 				{
 					case COL_GGJ:
 						return CIRCLE_COLORS[ring];
-					case COL_RED:
-						return float4(grey, 0, 0, 1.0f);
+					case COL_GREEN:
+						return float4(0, grey, 0, 1.0f);
 					default:
 						grey = lerp(0.2f, 0.02f, grey);
 						return float4(grey, grey, grey, 1.0f);

@@ -4,21 +4,18 @@ using UnityEngine;
 
 public class MobileWifi : MonoBehaviour
 {
-    public GameObject MobileDataBar;
+    public ProgressBar MobileDataBar;
     public GameObject Wifi;
-    public float PrepaidBalance;
+    public float StartPrepaidBalance;
+    public float BalanceLossPerSecond;
 
-    private ProgressBar _mobileData;
-    private Vector2 _spawnPosition;
-    private float _spawnBalance;
+    private float _balance;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        _mobileData = MobileDataBar.GetComponent<ProgressBar>();
-        SetMobileDataActive(false);
-        _spawnBalance = _mobileData.Balance;
-        _spawnPosition = transform.position;
+        Respawn();
     }
 
     // Update is called once per frame
@@ -44,28 +41,24 @@ public class MobileWifi : MonoBehaviour
             if (hit.collider == null)
             {
                 Debug.DrawLine(playerPos, wifiPos, Color.red);
-                SetMobileDataActive(false);
+                Wifi.SetActive(false);
                 return;
             }
             Debug.DrawLine(playerPos, wifiPos, Color.white);
         }
 
         // No unobstructed wifi. Use prepaid.
-        SetMobileDataActive(true);
-        if (_mobileData.Balance <= 0)
+        Wifi.SetActive(true);
+        _balance -= BalanceLossPerSecond * Time.deltaTime;
+        if (_balance <= 0)
             Respawn();
-    }
-
-    void SetMobileDataActive(bool active)
-    {
-        MobileDataBar.SetActive(active);
-        Wifi.SetActive(active);
+        MobileDataBar.Progress = _balance / StartPrepaidBalance;
     }
 
     void Respawn()
     {
-        //_mobileData.Balance = _spawnBalance;
-        //MobileDataBar.SetActive(false);
-        //transform.position = _spawnPosition;
+        Wifi.SetActive(false);
+        _balance = StartPrepaidBalance;
+        GetComponent<Player>().Reset();
     }
 }

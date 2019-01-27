@@ -8,7 +8,7 @@ public class WifiRenderer : MonoBehaviour
     public enum ColorSchema
     {
         GGJ = 0,
-        Red = 1,
+        Green = 1,
         Golden = 2
     }
     private ColorSchema _color;

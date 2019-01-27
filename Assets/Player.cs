@@ -62,14 +62,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        transform.position = _spawnPosition;
+    }
+
     private void FixedUpdate()
     {
         var activeMover = _platformAttachedTo?.GetComponent<Mover>();
         if (activeMover != null)
             _rigidbody.position += activeMover.Velocity * Time.fixedDeltaTime;
         _rigidbody.velocity = new Vector2(Input.GetAxis("Horizontal") * MovementSpeed, _rigidbody.velocity.y);
-
-
 
         var animator = GetComponent<Animator>();
         animator.SetBool("walk", Input.GetAxis("Horizontal") != 0.0f);
